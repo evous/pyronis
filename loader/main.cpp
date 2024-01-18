@@ -21,7 +21,14 @@ BOOL SetRemoteProcessMitigationPolicy (
 	HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS | PROCESS_SET_INFORMATION, FALSE, targetPid);
 
 	if (proc != NULL) {
-		_NtSetInformationProcess NtSetInformationProcess = (_NtSetInformationProcess)GetProcAddress(GetModuleHandle("ntdll.dll"), "NtSetInformationProcess");
+		HMODULE ntdll_module = GetModuleHandleA("ntdll.dll");
+		if (ntdll_module == NULL) {
+			std::cerr << "failed to get module handle for ntdll.dll\n";
+			std::cin.get();
+			return 1;
+		}
+
+		_NtSetInformationProcess NtSetInformationProcess = (_NtSetInformationProcess)GetProcAddress(ntdll_module, "NtSetInformationProcess");
 
 		uint64_t policy = *(DWORD*)lpBuffer;
 		policy = policy << 32;
@@ -106,7 +113,7 @@ int main(int argc, char** argv) {
 	WaitForInputIdle(process_info.hProcess, INFINITE);
 
 	HWND hwnd = FindWindow(NULL, "Growtopia");
-	if (hwnd == NULL) {
+	if (!hwnd) {
 		std::cerr << "failed to find growtopia window\n";
 		std::cin.get();
 		return 1;
@@ -141,27 +148,64 @@ int main(int argc, char** argv) {
 	HANDLE process_handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, process_id);
 
 	// restore NtProtectVirtualMemory original bytes
+	HMODULE ntdll_module = GetModuleHandleA("ntdll.dll");
+	if (!ntdll_module) {
+		std::cerr << "failed to get module handle for ntdll.dll\n";
+		std::cin.get();
+		return 1;
+	}
+
+	LPVOID nt_protect_virtual_memory_addr = GetProcAddress(ntdll_module, "NtProtectVirtualMemory");
+	if (!nt_protect_virtual_memory_addr) {
+		std::cerr << "failed to get address of nt_protect_virtual_memory\n";
+		std::cin.get();
+		return 1;
+	}
+
 	constexpr std::array<std::uint8_t, 5> bytes = { 0x4C, 0x8B, 0xD1, 0xB8, 0x50 };
+
 	if (!WriteProcessMemory(
 		process_handle,
-		GetProcAddress(GetModuleHandle("ntdll.dll"), "NtProtectVirtualMemory"),
+		nt_protect_virtual_memory_addr,
 		bytes.data(),
 		bytes.size(),
 		nullptr
 	)) {
-		std::cerr << "failed to restore NtProtectVirtualMemory original bytes\n";
+		std::cerr << "failed to restore nt_protect_virtual_memory original bytes\n";
 		std::cin.get();
 		return 1;
 	}
 
 	// inject dll
 	LPVOID remote_address = VirtualAllocEx(process_handle, NULL, dll_path_len + 1, MEM_COMMIT, PAGE_READWRITE);
+	if (!remote_address) {
+		std::cerr << "failed to allocate memory in remote process\n";
+		std::cin.get();
+		return 1;
+	}
+
 	WriteProcessMemory(process_handle, remote_address, dll_path, dll_path_len + 1, NULL);
-	LPTHREAD_START_ROUTINE thread_start_routine = (LPTHREAD_START_ROUTINE)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+
+	HMODULE kernel32_module = GetModuleHandleA("kernel32.dll");
+	if (!kernel32_module) {
+		std::cerr << "failed to get module handle for kernel32.dll\n";
+		std::cin.get();
+		return 1;
+	}
+
+	LPTHREAD_START_ROUTINE thread_start_routine = (LPTHREAD_START_ROUTINE)GetProcAddress(kernel32_module, "LoadLibraryA");
+
 	HANDLE remote_thread = CreateRemoteThread(process_handle, NULL, 0, thread_start_routine, remote_address, 0, NULL);
-	WaitForSingleObject(remote_thread, INFINITE);
-	CloseHandle(remote_thread);
-	VirtualFreeEx(process_handle, remote_address, dll_path_len + 1, MEM_RELEASE);
+	if (remote_thread) {
+		WaitForSingleObject(remote_thread, INFINITE);
+		CloseHandle(remote_thread);
+	}
+
+	if (remote_address) {
+		VirtualFreeEx(process_handle, remote_address, 0, MEM_RELEASE);
+	}
+
 	CloseHandle(process_handle);
+	CloseHandle(process_info.hThread);
 	return 0;
 }

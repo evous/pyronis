@@ -8,7 +8,8 @@
 void menu::setup() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-
+	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = nullptr;
 	ImGui_ImplDX9_Init(gt::get_renderer()->device);
 	ImGui_ImplWin32_Init(gt::hwnd);
 
@@ -46,7 +47,7 @@ void menu::render() noexcept {
 		ImGui::SeparatorText("test");
 
 		if (client->peer) {
-			ImGui::Text("server: %s:%d", client->server_ip.c_str(), client->server_port);
+			ImGui::Text("server: %s:%u", client->server_ip.c_str(), client->server_port);
 			ImGui::Text("user: %d", client->user);
 			ImGui::Text("token: %d", client->token);
 			ImGui::Text("uuid token: %s", client->uuid_token);
