@@ -41,6 +41,7 @@ void find_address(auto& dest, std::string_view pattern, find_mode mode, std::int
 }
 
 void find_addresses() {
+	find_address(gt::get_client, "74 ? ? ? A3 C6 ? 48 ? ?", find_mode::call, 2);
 	find_address(gt::renderer, "48 8B 05 ? ? ? ? 41 83 ? ?", find_mode::load, 3);
 
 	gt::end_scene = reinterpret_cast<decltype(gt::end_scene)>((*reinterpret_cast<void***>(gt::get_renderer()->device_ex))[42]);

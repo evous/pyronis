@@ -194,6 +194,7 @@
     <ClInclude Include="lib\minhook\src\hde\table64.h" />
     <ClInclude Include="lib\minhook\src\trampoline.h" />
     <ClInclude Include="src\game\gt.hpp" />
+    <ClInclude Include="src\game\network\enet_client.hpp" />
     <ClInclude Include="src\game\renderer\renderer_context.hpp" />
     <ClInclude Include="src\hooks\hooks.hpp" />
     <ClInclude Include="src\menu\menu.hpp" />

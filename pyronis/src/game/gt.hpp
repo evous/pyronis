@@ -1,5 +1,6 @@
 #pragma once
 #include <game/renderer/renderer_context.hpp>
+#include <game/network/enet_client.hpp>
 #include <utils/math.hpp>
 
 #include <cstdint>
@@ -21,5 +22,7 @@ namespace gt {
 
 	inline HRESULT(*end_scene)(IDirect3DDevice9* _this) = nullptr;
 
+	
+	inline enet_client_t* (*get_client)() = nullptr;
 	inline renderer_context_d3d9_t** renderer = nullptr;
 }

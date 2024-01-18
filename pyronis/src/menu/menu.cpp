@@ -38,10 +38,22 @@ void menu::render() noexcept {
 		ImGui::Begin("pyronis", &show, ImGuiWindowFlags_NoCollapse);
 
 		renderer_context_d3d9_t* renderer = gt::get_renderer();
+		enet_client_t* client = gt::get_client();
+
+		debug_button("enet client", client);
 		debug_button("renderer", renderer);
 
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+		ImGui::SeparatorText("test");
 
+		if (client->peer) {
+			ImGui::Text("server: %s:%d", client->server_ip.c_str(), client->server_port);
+			ImGui::Text("user: %d", client->user);
+			ImGui::Text("token: %d", client->token);
+			ImGui::Text("uuid token: %s", client->uuid_token);
+			ImGui::Text("door id: %s", client->door_id);
+		}
+
+		ImGui::Text("application average %.3f ms/frame (%.1f fps)", 1000.0f / io.Framerate, io.Framerate);
 		ImGui::End();
 	}
 
