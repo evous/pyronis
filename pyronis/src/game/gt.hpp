@@ -22,7 +22,8 @@ namespace gt {
 
 	inline HRESULT(*end_scene)(IDirect3DDevice9* _this) = nullptr;
 
-	
 	inline enet_client_t* (*get_client)() = nullptr;
+	inline void (*set_fps_limit)(void* _this, float fps) = nullptr;
+
 	inline renderer_context_d3d9_t** renderer = nullptr;
 }
