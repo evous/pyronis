@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <format>
+#include <utils/memory.hpp>
 
 void menu::setup() {
 	IMGUI_CHECKVERSION();
@@ -38,20 +39,21 @@ void menu::render() noexcept {
 		ImGui::SetNextWindowSize({ 500.f, 300.f }, ImGuiCond_Once);
 		ImGui::Begin("pyronis", &show, ImGuiWindowFlags_NoCollapse);
 
-		renderer_context_d3d9_t* renderer = gt::get_renderer();
+		app_t* app = gt::get_app();
 		enet_client_t* client = gt::get_client();
+		renderer_context_d3d9_t* renderer = gt::get_renderer();
 
+		debug_button("app", app);
 		debug_button("enet client", client);
 		debug_button("renderer", renderer);
 
 		ImGui::SeparatorText("test");
 
 		if (client->peer) {
-			ImGui::Text("server: %s:%u", client->server_ip.c_str(), client->server_port);
+			ImGui::Text("server: %s:%u", client->server_ip, client->server_port);
 			ImGui::Text("user: %d", client->user);
 			ImGui::Text("token: %d", client->token);
 			ImGui::Text("uuid token: %s", client->uuid_token);
-			ImGui::Text("door id: %s", client->door_id);
 		}
 
 		ImGui::Text("application average %.3f ms/frame (%.1f fps)", 1000.0f / io.Framerate, io.Framerate);

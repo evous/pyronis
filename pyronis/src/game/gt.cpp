@@ -6,6 +6,7 @@
 #include <string>
 #include <format>
 #include <fstream>
+#include <thread>
 
 enum class find_mode {
 	normal,
@@ -41,8 +42,9 @@ void find_address(auto& dest, std::string_view pattern, find_mode mode, std::int
 }
 
 void find_addresses() {
-	find_address(gt::set_fps_limit, "F3 ? ? ? ? 3F 67 ? E8 ? ? ? ?", find_mode::call, 8);
+	find_address(gt::get_app, "c3 e8 ? ? ? ? 48 8b c8 33 d2", find_mode::call, 1);
 	find_address(gt::get_client, "74 ? ? ? A3 C6 ? 48 ? ?", find_mode::call, 2);
+	find_address(gt::set_fps_limit, "F3 ? ? ? ? 3F 67 ? E8 ? ? ? ?", find_mode::call, 8);
 
 	find_address(gt::renderer, "48 8B 05 ? ? ? ? 41 83 ? ?", find_mode::load, 3);
 	gt::end_scene = reinterpret_cast<decltype(gt::end_scene)>((*reinterpret_cast<void***>(gt::get_renderer()->device_ex))[42]);
@@ -75,7 +77,7 @@ void gt::setup() {
 	find_addresses();
 	print_good("found addresses");
 
-	set_fps_limit(nullptr, 0.f);
+	set_fps_limit(get_app(), 0.f);
 	print_good("unlocked fps limit");
 }
 
