@@ -193,12 +193,17 @@
     <ClInclude Include="src\game\app\app.hpp" />
     <ClInclude Include="src\game\app\base_app.hpp" />
     <ClInclude Include="src\game\gt.hpp" />
+    <ClInclude Include="src\game\gui\rtfont.hpp" />
+    <ClInclude Include="src\game\manager\console.hpp" />
+    <ClInclude Include="src\game\manager\game_timer.hpp" />
+    <ClInclude Include="src\game\manager\resource_manager.hpp" />
     <ClInclude Include="src\game\network\enet_client.hpp" />
     <ClInclude Include="src\game\renderer\renderer_context.hpp" />
     <ClInclude Include="src\hooks\hooks.hpp" />
     <ClInclude Include="src\menu\menu.hpp" />
+    <ClInclude Include="src\game\utils\boost.hpp" />
     <ClInclude Include="src\utils\console.hpp" />
-    <ClInclude Include="src\utils\math.hpp" />
+    <ClInclude Include="src\game\utils\math.hpp" />
     <ClInclude Include="src\utils\memory.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

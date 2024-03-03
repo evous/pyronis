@@ -43,20 +43,27 @@ void menu::render() noexcept {
 		enet_client_t* client = gt::get_client();
 		renderer_context_d3d9_t* renderer = gt::get_renderer();
 
-		debug_button("app", app);
-		debug_button("enet client", client);
-		debug_button("renderer", renderer);
+		ImGui::SeparatorText("debug test");
 
-		ImGui::SeparatorText("test");
+		debug_button("app", app);
+		debug_button("renderer", renderer);
+		debug_button("enet client", client);
 
 		if (client->peer) {
+			ImGui::SeparatorText("enet client test");
 			ImGui::Text("server: %s:%u", client->server_ip, client->server_port);
 			ImGui::Text("user: %d", client->user);
 			ImGui::Text("token: %d", client->token);
 			ImGui::Text("uuid token: %s", client->uuid_token);
 		}
 
-		ImGui::Text("application average %.3f ms/frame (%.1f fps)", 1000.0f / io.Framerate, io.Framerate);
+		ImGui::SeparatorText("app & baseapp test");
+
+		if (app) {
+			ImGui::Text("fps: %d", app->game_timer.fps);
+			ImGui::Checkbox("show/hide fps", &app->fps_visible);
+		}
+
 		ImGui::End();
 	}
 

@@ -2,7 +2,7 @@
 #include <game/network/enet_client.hpp>
 #include <game/renderer/renderer_context.hpp>
 #include <game/app/app.hpp>
-#include <utils/math.hpp>
+#include <game/utils/math.hpp>
 
 #include <cstdint>
 #include <string>
